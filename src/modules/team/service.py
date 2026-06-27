@@ -75,9 +75,9 @@ async def create_team(
     # Step 2: Persist the team
     team = await team_repo.create(orm_model=team)
 
-    await session.flush() # مشان نستخدم المعرّف الخاص بالفريق لانشاء صاحب الفريق او يلي عمل الفريق ك `SUPER_ADMIN`
+    await session.flush() # مشان نستخدم المعرّف الخاص بالفريق لانشاء صاحب الفريق او يلي عمل الفريق ك `TEAM_LEADER`
 
-    # Step 3: Build the creator's membership as SUPER_ADMIN
+    # Step 3: Build the creator's membership as ADMIN
     membership = TeamMember(
         member_id=current_user.id,
         team_id=team.id,
@@ -132,8 +132,8 @@ async def update_team(
         member_id=current_user.id,
         team_id=team_id,
     )
-    if member_role not in {UserRoles.SUPER_ADMIN, UserRoles.ADMIN}:
-        raise InsufficientRoleException('ADMIN')
+    if member_role != UserRoles.SUPER_ADMIN:
+        raise InsufficientRoleException('SUPER_ADMIN')
 
     # Step 3: Apply the update
     updated_team = await team_repo.update(

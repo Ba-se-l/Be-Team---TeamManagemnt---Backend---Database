@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from typing import AsyncGenerator
 
 from src.conf import settings
@@ -26,8 +27,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     On shutdown: Closes the database engine.
     """
     async with async_engine.begin() as conn:
-        # انشاء الجداول بهي الطريقة للنسخة التجريبية فقط (MVB)
-        # بعدين لازم نعملها باستخدام (Alembic)
+        # For MVP, create all tables. In production, use Alembic.
         await conn.run_sync(Base.metadata.create_all)
     
     yield
@@ -45,7 +45,7 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["*"], # Hardcoded fallback because CORS_ORIGINS is not in settings
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -87,10 +87,14 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 # Include the master API router
 app.include_router(api_router)
 
+# Mount the static frontend interface
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
 
 if __name__ == "__main__":
-    from uvicorn import run
-    run(
+    import uvicorn
+    # Allows starting the server directly via `python src/main.py`
+    uvicorn.run(
         "src.main:app",
         host=settings.HOST,
         port=settings.PORT,

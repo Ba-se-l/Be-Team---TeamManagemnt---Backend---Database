@@ -50,8 +50,8 @@ async def add_member(
 
     # Step 1: Verify adder's role
     adder_role = await member_repo.get_member_role(member_id=adder.id, team_id=team_id)
-    if adder_role not in {UserRoles.SUPER_ADMIN, UserRoles.ADMIN}:
-        raise InsufficientRoleException('ADMIN')
+    if adder_role != UserRoles.SUPER_ADMIN:
+        raise InsufficientRoleException('SUPER_ADMIN')
 
     # Step 2: Verify target user exists and is active
     target_user = await user_repo.get_by_id(id=schema.user_id)
@@ -113,8 +113,8 @@ async def remove_member(
 
     # Step 1: Verify remover's role
     remover_role = await member_repo.get_member_role(member_id=remover.id, team_id=team_id)
-    if remover_role not in {UserRoles.SUPER_ADMIN, UserRoles.ADMIN}:
-        raise InsufficientRoleException('ADMIN')
+    if remover_role != UserRoles.SUPER_ADMIN:
+        raise InsufficientRoleException('SUPER_ADMIN')
 
     # Step 2: Fetch target membership
     membership = await member_repo.get_membership(member_id=user_id, team_id=team_id)

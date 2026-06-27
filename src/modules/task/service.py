@@ -86,6 +86,15 @@ async def create_task(
     if not is_creator_member:
         raise ValueError("Creator must be a member of the project's team.")
 
+    # Step 2.5: Verify creator role
+    creator_role = await member_repo.get_member_role(
+        member_id=creator.id,
+        team_id=project.team_id
+    )
+
+    if creator_role != UserRoles.SUPER_ADMIN:
+        raise InsufficientRoleException('SUPER_ADMIN')
+
     # Step 3: Verify assignee is a member (if provided)
     if schema.assignee_to_id:
         is_assignee_member = await member_repo.check_if_membership(
@@ -161,7 +170,7 @@ async def update_task(
         team_id=project.team_id
     )
 
-    if updater_role not in {UserRoles.SUPER_ADMIN, UserRoles.ADMIN}:
+    if updater_role != UserRoles.SUPER_ADMIN:
         raise InsufficientRoleException('SUPER_ADMIN')
 
     # Step 2: Verify updater is a member
@@ -232,6 +241,16 @@ async def soft_delete_task(
     )
     if not is_member:
         raise ValueError("Must be a member of the project's team to delete tasks.")
+
+    # Step 2.5: Verify deleter role
+
+    deleter_role = await member_repo.get_member_role(
+        member_id=current_user.id,
+        team_id=project.team_id
+    )
+
+    if deleter_role != UserRoles.SUPER_ADMIN:
+        raise InsufficientRoleException('SUPER_ADMIN')
 
     # Step 3: Apply the soft delete
     deleted_task = await task_repo.update(

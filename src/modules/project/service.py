@@ -180,7 +180,7 @@ async def soft_delete_project(
         team_id=project.team_id,
     )
     if deleter_role != UserRoles.SUPER_ADMIN:
-        raise InsufficientRoleException('SUPER_ADMIN')
+        raise InsufficientRoleException('ADMIN')
 
     # Step 3: Apply the soft delete
     deleted_project = await project_repo.update(

@@ -14,7 +14,7 @@ class CreateUserRequest(BaseModel):
     email: str = Field(..., min_length=5, max_length=100, pattern=r'^[\w\.-]+@[\w\.-]+\.\w+$')
     """Them user's email address, `Must` be uniqe"""
 
-    password: str = Field(..., min_length=10, max_length=100)
+    password: str = Field(..., min_length=8, max_length=100)
     """The user's plain-text password. Will be hashed before storage"""
 
 
@@ -34,10 +34,10 @@ class UpdateSchemaRequest(BaseModel):
 class ChangePasswordRequest(BaseModel):
     """Schema for password change request"""
 
-    old_password: str = Field(..., min_length=10)
+    old_password: str = Field(..., min_length=8)
     """Current password for verification"""
 
-    new_password: str = Field(..., min_length=10, max_length=100)
+    new_password: str = Field(..., min_length=8, max_length=100)
     """New password to set"""
 
 

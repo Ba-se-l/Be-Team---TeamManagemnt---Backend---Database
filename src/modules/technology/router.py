@@ -111,7 +111,7 @@ async def update_technology(
     tech = await service.update_technology(
         tech_id=tech_id,
         schema=request,
-        session=session,
+        session=session
     )
     return TechnologyResponse.model_validate(tech)
 
@@ -128,5 +128,5 @@ async def delete_technology(
     session: AsyncSession = Depends(get_session),
 ) -> TechnologyResponse:
     """Hard-deletes a technology from the catalog."""
-    tech = await service.delete_technology(tech_id=tech_id, session=session)
+    tech = await service.delete_technology(tech_id=tech_id, session=session, current_user=current_user)
     return TechnologyResponse.model_validate(tech)

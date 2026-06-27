@@ -10,6 +10,8 @@ from uuid import UUID as ID
 from typing import Sequence
 
 from src.core import AlreadyExistsException
+from src.modules.user import User
+from src.modules.team_members import InsufficientRoleException
 from .models import Technology
 from .schemas import CreateTechnologyRequest, UpdateTechnologyRequest
 from .repository import TechnologyRepository
@@ -40,7 +42,7 @@ async def _get_technology(tech_id: ID, session: AsyncSession) -> Technology:
 
 async def create_technology(
     schema: CreateTechnologyRequest,
-    session: AsyncSession,
+    session: AsyncSession
 ) -> Technology:
     """Creates a new technology entry in the global catalog.
 
@@ -81,7 +83,7 @@ async def create_technology(
 async def update_technology(
     tech_id: ID,
     schema: UpdateTechnologyRequest,
-    session: AsyncSession,
+    session: AsyncSession
 ) -> Technology:
     """Updates an existing technology entry.
 
@@ -109,6 +111,7 @@ async def update_technology(
         is_exist = await repo.check_if_exist(name=schema.name)
         if is_exist:
             raise AlreadyExistsException(entity="Technology", field="name", value=schema.name)
+
 
     # Step 3: Apply update
     updated_tech = await repo.update(
