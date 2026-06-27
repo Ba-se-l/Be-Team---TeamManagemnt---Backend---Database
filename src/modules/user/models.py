@@ -8,7 +8,7 @@ from uuid import (
 
 from src.database import Base
 from src.database import CreatedAtUpdatedAtMixin
-from src.database import UserStatus
+from src.database import UserStatus, JobTitle
 
 if TYPE_CHECKING:
     from src.modules.team import Team
@@ -31,11 +31,16 @@ class User(Base, CreatedAtUpdatedAtMixin):
 
     hashed_password: Mapped[str] = mapped_column(String, nullable=False)
 
-    is_active: Mapped[Boolean] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    is_super_admin: Mapped[Boolean] = mapped_column(Boolean, default=False)
+    is_super_admin: Mapped[bool] = mapped_column(Boolean, default=False)
 
     status: Mapped[UserStatus] = mapped_column(Enum(UserStatus), default=UserStatus.ONLINE)
+
+    job_title: Mapped[JobTitle | None] = mapped_column(Enum(JobTitle), nullable=True, default=None)
+
+    bio: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
+
 
 
     # ======================
@@ -55,7 +60,7 @@ class User(Base, CreatedAtUpdatedAtMixin):
         foreign_keys='Team.creator_id'
     )
 
-    teams_memberships: Mapped[list[TeamMember]] = relationship(
+    teams_memberships: Mapped[list['TeamMember']] = relationship(
         'TeamMember',
         back_populates='member',
         foreign_keys='TeamMember.member_id',
@@ -75,3 +80,7 @@ class User(Base, CreatedAtUpdatedAtMixin):
         back_populates='assignee_to',
         foreign_keys='Task.assignee_to_id'
     )
+
+
+    def __repr__(self):
+        return f"User(id={self.id}, name={self.name}, email={self.email})"

@@ -31,17 +31,22 @@ class Project(Base, CreatedAtUpdatedAtMixin):
 
     short_description: Mapped[str] = mapped_column(String, nullable=False)
 
-    is_active: Mapped[Boolean] = mapped_column(Boolean, nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    status: Mapped[ProjectStatus] = mapped_column(Enum(ProjectStatus), nullable=False)
+    status: Mapped[ProjectStatus] = mapped_column(Enum(ProjectStatus), default=ProjectStatus.TODO)
 
     released_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, default=None)
     
+
+    def __repr__(self):
+        return f"Project(id={self.id}, title={self.title}, status={self.status})"
     
     # ======================
     # === RELATIONSHIPS ====
     # ======================
-    creator_id: Mapped[ID] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'))
+    creator_id: Mapped[ID | None] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'))
 
     created_by: Mapped['User'] = relationship(
         'User',
@@ -50,7 +55,7 @@ class Project(Base, CreatedAtUpdatedAtMixin):
     )
 
 
-    team_id: Mapped[ID] = mapped_column(ForeignKey('teams.id', ondelete='SET NULL'))
+    team_id: Mapped[ID | None] = mapped_column(ForeignKey('teams.id', ondelete='SET NULL'))
     
     team: Mapped['Team'] = relationship(
         'Team',

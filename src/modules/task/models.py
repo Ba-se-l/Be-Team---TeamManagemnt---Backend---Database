@@ -1,10 +1,13 @@
+
 from typing import TYPE_CHECKING
-from sqlalchemy import String, Enum, ForeignKey
+from sqlalchemy import String, Enum, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from uuid import (
     UUID as ID,
     uuid4 as id4
 )
+from datetime import datetime
+
 
 from src.database import Base
 from src.database import CreatedAtUpdatedAtMixin
@@ -29,14 +32,22 @@ class Task(Base, CreatedAtUpdatedAtMixin):
 
     description: Mapped[str] = mapped_column(String, nullable=False)
 
-    status: Mapped[TaskStatus] = mapped_column(Enum(TaskStatus), nullable=False)
+    status: Mapped[TaskStatus] = mapped_column(Enum(TaskStatus), default=TaskStatus.TODO)
 
-    priority: Mapped[TaskPriority] = mapped_column(Enum(TaskPriority), nullable=False)
+    priority: Mapped[TaskPriority] = mapped_column(Enum(TaskPriority), default=TaskPriority.MEDIUM)
+
+    deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, default=None)
+
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+    def __repr__(self):
+        return f"Task(id={self.id}, title={self.title}, status={self.status})"
 
     # ======================
     # === RELATIONSHIPS ====
     # ======================
-    creator_id: Mapped[ID] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'))
+    creator_id: Mapped[ID | None] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'))
 
     created_by: Mapped['User'] = relationship(
         'User',
@@ -45,7 +56,7 @@ class Task(Base, CreatedAtUpdatedAtMixin):
     )
 
 
-    assignee_to_id: Mapped[ID] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'))
+    assignee_to_id: Mapped[ID | None] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'))
 
     assignee_to: Mapped['User'] = relationship(
         'User',

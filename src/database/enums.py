@@ -33,3 +33,12 @@ class UserRoles(StrEnum):
     ADMIN = 'admin'
     DEVELOPER = 'developer'
     VIEWER = 'viewer'
+
+class JobTitle(StrEnum):
+    BACKEND_DEVELOPER = 'backend_developer'
+    FRONTEND_DEVELOPER = 'frontend_developer'
+    FLUTTER_DEVELOPER = 'flutter_developer'
+    UIUX_DEVELOPER = 'UI_UX_developer'
+    WEP_DEVELOPER = 'wep_developer'
+    SOFTWERE_DEVELOPER = 'softwere_developer'
+    

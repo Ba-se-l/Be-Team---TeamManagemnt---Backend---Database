@@ -21,11 +21,15 @@ class Technology(Base, CreatedAtUpdatedAtMixin):
 
     id: Mapped[ID] = mapped_column(primary_key=True, default=id4)
     
-    name: Mapped[str] = mapped_column(String, nullable=False)
+    name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
 
     description: Mapped[str | None] = mapped_column(String)
 
-    class_or_url: Mapped[str | None] = mapped_column(String)
+    documentation_url: Mapped[str | None] = mapped_column(String)
+
+
+    def __repr__(self):
+        return f"Techonolgy(id={self.id}, name={self.name})"
 
     # ======================
     # === RELATIONSHIPS ====

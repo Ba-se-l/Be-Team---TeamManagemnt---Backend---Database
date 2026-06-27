@@ -1,8 +1,8 @@
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, Table
 
-from src.database import Base, M2M
+from src.database import Base
 
-ProjectsTechnologies = M2M(
+ProjectsTechnologies = Table(
     'projects_technologies',
     Base.metadata,
     Column('project_id', ForeignKey('projects.id', ondelete='CASCADE'), primary_key=True),
